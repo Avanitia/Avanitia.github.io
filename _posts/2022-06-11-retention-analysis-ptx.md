@@ -5,7 +5,7 @@ Hello! in this post, I will show you a method I've done in order to visualize th
 
 <h2>Case</h2>
 <p align="justify">
-PT X is a startup e-grocery company which operates in Indonesia. Currently, they've finished one of their campaign with an objective to increase the retention of first-time customers through a marketing campaign. Using vouchers as a tool to promote the campaign, first_time customers will get a voucher in a specific period, tailored to their characteristics (tenure, lifetime profits, etc.) while getting the information itself by push-notification and app's inbox. A/B testing is also used to compare the effectivity of each vouchers. </p>
+PT X is a startup e-grocery company which operates in Indonesia. Currently, they've finished one of their campaign with an objective to increase the retention of first-time customers through a marketing campaign since current first-time customers monthly retention rate is quite low (roughly 10%). Using vouchers as a tool to promote the campaign, first_time customers will get a voucher in a specific period, tailored to their characteristics (tenure, lifetime profits, etc.) while getting the information itself by push-notification and app's inbox. A/B testing is also used to compare the effectivity of each vouchers. </p>
 
 <p align="justify">
 In order to understand the performance of their campaign, there is a need for a data visualization for customers who did use the voucher for a transaction, and then process the data to visualize how many people retain after every period of time. Below is the database scheme needed to create the analysis.</p>
@@ -20,20 +20,20 @@ In order to understand the performance of their campaign, there is a need for a 
   <li> Create a retention table </li>
   <li> Visualize customers retention</li>
   <li> Data Analysis </li>
-  <li> Conclusion and Recommendation </li> 
+  <li> Conclusion </li> 
  </ol>
  
  <h2>Tools Used</h2>
   <ol type= 1>
    <li> Bigquery </li>
-   <li> Tableau </li>
+   <li> Microsoft Excel </li>
    <li> Metabase </li>
   </ol>
 
 <h2>Answer</h2>
 <h3>1. Identify the campaign's customer pool </h3>
 <p align="justify">
-First of all, we need to get the campaign's customer pool data in order to measure the performance of the campaign, since retention rate is based of the number of people in current period (weekly/biweekly/monthly) compared to the original pool itself. Since we need information about customer pool, then data gathering would be based from consumer_voucher table (order table can't be used since the data is based on people who have done a transaction, hence not the original pool). Below is the code required to get the pool. </p>
+First of all, we need to get the campaign's customer pool data in order to measure the performance of the campaign in the Metabase using BigQuery, since retention rate is based of the number of people in current period (weekly/biweekly/monthly) compared to the original pool itself. Since we need information about customer pool, then data gathering would be based from consumer_voucher table (order table can't be used since the data is based on people who have done a transaction, hence not the original pool). Below is the code required to get the pool. </p>
  
  ```tsql
 WITH m1_group as(
@@ -139,12 +139,18 @@ ORDER BY 1
 <p align="justify">
 In main query, we compile all the information from get_point and master_cohort2 by joining them, then used MAX() function combined with IF() to get total customers from each cohort_date. With that, the second objective is done. You can see the results below. </p>
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/49559301/205937308-74339ea4-1b6f-46b7-9e11-0a139b462517.png" width="300" height="275" />
+<h3>3. Visualize customers retention </h3>
+<p align="justify">
+Visualization is done using Microsoft Excel. After calculating the percentage of each index compared to the original pool, the number then got averaged and visualized using line chart. Lastly, we compare the results from customer's retention before and after campaign (Before, or baseline was calculated before the analysis). Below is the graph for PT X's campaign retention rate.
+
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/49559301/205950074-14313743-c7c9-4f4e-bea8-6a738b09c531.png">
 </p>
 
-<h3>3. Visualize customers retention </h3>
-
-
-
-
+<h3>4. Conclusion </h3>
+<p align="justify">
+   In general, the voucher campaign has proven to be quite effective in increasing customer retention (ranging from 10-15% more per index). Further steps should be done, as follows: </p>
+<ol type=1>
+   <li> Dividing the retention rate from the A/B testing (this is still general analysis) in order to see which treatment is better </li>
+   <li> Consideration for further scale up of the campaign (need to consider Cost to Revenue ratio (CTR), etc) </li>
+</ol>
