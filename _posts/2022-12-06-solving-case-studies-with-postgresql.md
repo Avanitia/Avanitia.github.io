@@ -26,7 +26,7 @@
 <p align="justify">
   After we understand the objectives, let's move on to the coding. I'm using WITH() function to save the data containing commuter time calculation for each commuter first. Since we are using PostgreSQL, I used date_part() to get the minute of both start_dt and end_dt after converting them to timestamp format first, as follows. </p>
   
-```psql
+```tsql
 WITH data1 as(
     SELECT
         id,
@@ -40,7 +40,7 @@ WITH data1 as(
 <p align="justify">
   Next, we can move on to the main query. With the assumption that commuter_time minute should be rounded down if they're in the decimals, I used AVG() of the commuter_time calculated before, and then combine it with simple window function using OVER() for avg_time and additional partitioning for avg_commuter_time by commuter_id. Lastly, just add the filter for the city (we use 'NY' this time) and we're done. </p>
 
-```psql
+```tsql
 SELECT 
     distinct(commuter_id),
     floor(avg(commuter_time) over(partition by commuter_id)) as avg_commuter_time,
