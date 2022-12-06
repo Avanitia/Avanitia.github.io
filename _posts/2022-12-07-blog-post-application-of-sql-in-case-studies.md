@@ -1,4 +1,5 @@
-#Application of SQL in Case Studies
+## Application of SQL in Case Studies
+
 Let’s say you work at Uber. The rides table contains information about the trips of Uber users across America
 
 Write a query to get the average commute time (in minutes) for each commuter in New York and the average commute time (in minutes) across all commuters in New York.
