@@ -1,7 +1,7 @@
 ## Solving Case Studies Using PostgreSQL: Uber Commuter Time Analysis
 
 <p align="justify">
-  Hello! in this post I will show you how I use PostgreSQL to solve a case study example. The source of this case study can be found on https://www.interviewquery.com. Do keep in mind that my answer is not absolute; there could be other ways to solve it, so other answers are welcomed. Well, let's get to it!
+  Hello! in this post I will show you how I use PostgreSQL to solve a case study example. The source of this case study can be found <a href ="https://www.interviewquery.com"> here</a>. Do keep in mind that my answer is not absolute; there could be other ways to solve it, so other answers are welcomed. Well, let's get to it!
 </p>
 
 <h2>Case Study Question</h2>
