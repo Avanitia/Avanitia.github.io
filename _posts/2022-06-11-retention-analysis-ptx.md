@@ -5,10 +5,10 @@ Hello! in this post, I will show you a method I've done in order to visualize th
 
 <h2>Case</h2>
 <p align="justify">
-PT X is a startup e-grocery company which operates in Indonesia. Currently, they've finished one of their campaign with an objective to increase the retention of first-time customers through a marketing campaign since current first-time customers monthly retention rate is quite low (roughly 10%). Using vouchers as a tool to promote the campaign, first_time customers will get a voucher in a specific period, tailored to their characteristics (tenure, lifetime profits, etc.) while getting the information itself by push-notification and app's inbox. A/B testing is also used to compare the effectivity of each vouchers. </p>
+PT X is a startup e-grocery company which operates in Indonesia. Currently, they've finished one of their campaign with an objective to increase the retention of first-time customers through a marketing campaign since <ins>current first-time customers monthly retention rate is quite low (roughly 10%)</ins>. Using vouchers as a tool to promote the campaign, first-time customers will get a voucher in a specific period, tailored to their characteristics (tenure, lifetime profits, etc.) while getting the information itself by push-notification and app's inbox. A/B testing is also used to compare the effectivity of each vouchers. </p>
 
 <p align="justify">
-In order to understand the performance of their campaign, there is a need for a data visualization for customers who did use the voucher for a transaction, and then process the data to visualize how many people retain after every period of time. Below is the database scheme needed to create the analysis.</p>
+In order to understand the performance of their campaign, there is <ins>a need for a data visualization for customers who did use the voucher for a transaction, and then process the data to visualize how many people retain after every period of time</ins>. Below is the database scheme needed to create the analysis.</p>
 
 <p align="center">
    <img src="https://user-images.githubusercontent.com/49559301/205889111-4ed4e082-7f3d-4237-97aa-ff57e8769bad.png" width="700" height="650" />
@@ -33,7 +33,7 @@ In order to understand the performance of their campaign, there is a need for a 
 <h2>Answer</h2>
 <h3>1. Identify the campaign's customer pool </h3>
 <p align="justify">
-First of all, we need to get the campaign's customer pool data in order to measure the performance of the campaign in the Metabase using BigQuery, since retention rate is based of the number of people in current period (weekly/biweekly/monthly) compared to the original pool itself. Since we need information about customer pool, then data gathering would be based from consumer_voucher table (order table can't be used since the data is based on people who have done a transaction, hence not the original pool). Below is the code required to get the pool. </p>
+First of all, we need to get the campaign's customer pool data in order to measure the performance of the campaign in the Metabase using BigQuery, since <ins>retention rate is based of the number of people in current period (weekly/biweekly/monthly) compared to the original pool itself</ins>. Since we need information about customer pool, then data gathering would be based from consumer_voucher table (order table can't be used since the data is based on people who have done a transaction, hence not the original pool). Below is the code required to get the pool. </p>
  
  ```tsql
 WITH m1_group as(
@@ -60,7 +60,7 @@ GROUP BY 1
 ```
 
 <p align="justify">
-Second CTE is named get_point. Purpose of this temporary table is to store the number of customer in each date who had been given a voucher (hence a pool). The reason this is not merged using subquery in the m1_group is because m1_group is needed to be joined in another table, which is shown in the 3rd CTE. First objective is done, and we can move on to create a retention table.</p>
+Second CTE is named get_point. Purpose of this temporary table is to <ins>store the number of customer in each date who had been given a voucher (hence a pool)</ins>. The reason this is not merged using subquery in the m1_group is because m1_group is needed to be joined in another table, which is shown in the 3rd CTE. First objective is done, and we can move on to create a retention table.</p>
 
 <h3>2. Create a retention table </h3>
 <p align="justify">
@@ -83,7 +83,7 @@ ORDER BY 2,3
 ```
 
  <p align="justify">
- The 3rd CTE is named order_all. This is needed to store all customer's transaction within the start period and months after. Key takeaways from this are as follows:
+ The 3rd CTE is named order_all. This is needed to <ins>store all customer's transaction within the start period and months after</ins>. Key takeaways from this are as follows:
    <ol type=1>
       <li> <ins>Distinct of order_no</ins>. Needed since we want unique row of each transactions, and order table can be filled with the same order_no in a different rows, since orders table is taking notes from different SKU purchased as well (1 row, 1 SKU code).</li>
       <li> <ins>Join within orders and orders_abuse</ins> to filter abused transaction (we want pure retention) using "type IS NULL" since values of type variable indicate abuse in the transaction.</li>
@@ -106,7 +106,7 @@ ORDER BY 1,2,3
 ```
 
 <p align="justify">
-Master_cohort 1's purpose is to store information regarding customer's transaction <b>AFTER OR SAME DAY</b> as the cohort date (since we want to see retention after cohort). To do that, we need to join m1_group and order_all first. Then, the gap between each transaction (index_monthly) is calculated by subtracting cohort_date and order_date by month. Now we can track customer's retention monthly, but we need to make it easier to read, which is why we'll be moving to the main query now.</p>
+Master_cohort 1's purpose is to <ins>store information regarding customer's transaction <b>AFTER OR SAME DAY</b> as the cohort date (since we want to see retention after cohort)</ins>. To do that, we need to join m1_group and order_all first. Then, the gap between each transaction (index_monthly) is calculated by subtracting cohort_date and order_date by month. Now we can track customer's retention monthly, but we need to make it easier to read, which is why we'll be moving to the main query now.</p>
 
 ```tsql   
 master_cohort2 as(
@@ -120,7 +120,7 @@ group by 1,2
 ```
 
 <p align="justify">
-The last CTE is master_cohort2, with purpose to hold the information of total customers retained (same idea as get_point, but different target). Since we have all the informations we needed, let's move on to main query.</p>
+The last CTE is master_cohort2, with purpose to <ins>hold the information of total customers retained (same idea as get_point, but different target)</ins>. Since we have all the informations we needed, let's move on to main query.</p>
 
 ```tsql
 SELECT
@@ -139,6 +139,10 @@ ORDER BY 1
 <p align="justify">
 In main query, we compile all the information from get_point and master_cohort2 by joining them, then used MAX() function combined with IF() to get total customers from each cohort_date. With that, the second objective is done. You can see the results below. </p>
 
+<p align="center"> 
+<img src="https://user-images.githubusercontent.com/49559301/205953934-23a453f8-7446-401a-8024-2b5f2652ed23.png">
+</p>
+
 <h3>3. Visualize customers retention </h3>
 <p align="justify">
 Visualization is done using Microsoft Excel. After calculating the percentage of each index compared to the original pool, the number then got averaged and visualized using line chart. Lastly, we compare the results from customer's retention before and after campaign (Before, or baseline was calculated before the analysis). Below is the graph for PT X's campaign retention rate.
@@ -151,6 +155,6 @@ Visualization is done using Microsoft Excel. After calculating the percentage of
 <p align="justify">
    In general, the voucher campaign has proven to be quite effective in increasing customer retention (ranging from 10-15% more per index). Further steps should be done, as follows: </p>
 <ol type=1>
-   <li> Dividing the retention rate from the A/B testing (this is still general analysis) in order to see which treatment is better </li>
-   <li> Consideration for further scale up of the campaign (need to consider Cost to Revenue ratio (CTR), etc) </li>
+   <li> <ins>Dividing the retention rate from the A/B testing</ins>(this is still general analysis) in order to see which treatment is better </li>
+   <li> <ins>Consideration for further scale up</ins> of the campaign (need to consider Cost to Revenue ratio (CTR), etc) </li>
 </ol>
