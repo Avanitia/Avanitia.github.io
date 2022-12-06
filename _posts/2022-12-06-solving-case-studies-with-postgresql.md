@@ -36,6 +36,7 @@ WITH data1 as(
     FROM rides
 )
 ```
+
 <p align="justify">
   Next, we can move on to the main query. With the assumption that commuter_time minute should be rounded down if they're in the decimals, I used AVG() of the commuter_time calculated before, and then combine it with simple window function using OVER() for avg_time and additional partitioning for avg_commuter_time by commuter_id. Lastly, just add the filter for the city (we use 'NY' this time) and we're done. </p>
 
@@ -47,6 +48,7 @@ SELECT
 FROM data1
 WHERE city = 'NY'
 ```
+
 <p align="justify"> Below is the result from the code. </p>
 
 | commuter_id |	avg_commuter_time |	avg_time
