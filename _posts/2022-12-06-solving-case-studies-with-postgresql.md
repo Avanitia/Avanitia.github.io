@@ -4,7 +4,7 @@
   Hello! in this post I will show you how I use PostgreSQL to solve a case study example. The source of this case study can be found on https://www.interviewquery.com. Do keep in mind that my answer is not absolute; there could be other ways to solve it, so other answers are welcomed. Well, let's get to it!
 </p>
 
-<h2>Case Study: Uber Commuter Time Analysis</h2>
+<h2>Case Study Question</h2>
 <p align="justify">
   Let’s say you work at Uber. The rides table contains information about the trips of Uber users across America. The table is as follows.</p>
   
