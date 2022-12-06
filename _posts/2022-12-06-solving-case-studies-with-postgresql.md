@@ -21,7 +21,7 @@
   
 <h3>Answer</h3>
 <p align="justify">
-  First, let's understand the objective of the question. The output of this question is to get 2 variables, which are average commute time in minutes for <b>EACH</b> commuter in NY (avg_commute_time) and average commute time for <b>ALL</b> commuter in NY (avg_time). That means the value of avg_time is the same across all rows, while avg_commute_time is different according to each commuter_id.(/p>
+  First, let's understand the objective of the question. The output of this question is to get 2 variables, which are average commute time in minutes for <b>EACH</b> commuter in NY (avg_commute_time) and average commute time for <b>ALL</b> commuter in NY (avg_time). That means the value of avg_time is the same across all rows, while avg_commute_time is different according to each commuter_id. </p>
   
 <p align="justify">
   After we understand the objectives, let's move on to the coding. I'm using WITH() function to save the data containing commuter time calculation for each commuter first. Since we are using PostgreSQL, I used date_part() to get the minute of both start_dt and end_dt after converting them to timestamp format first, as follows. </p>
