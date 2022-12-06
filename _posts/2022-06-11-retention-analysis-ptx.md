@@ -18,7 +18,9 @@ In order to understand the performance of their campaign, there is a need for a 
  <ol type= 1>
   <li> Identify the campaign's customer pool </li>
   <li> Create a retention table </li>
-  <li> Visualize customers retention into a graph for easier analysis </li>
+  <li> Visualize customers retention</li>
+  <li> Data Analysis </li>
+  <li> Conclusion and Recommendation </li> 
  </ol>
  
  <h2>Tools Used</h2>
@@ -48,6 +50,23 @@ GROUP BY 1,2
 Since the case is quite complex, we're using some Common Table Expression (CTE) using WITH() to contain processed informations before moving on to main query. Cohort date is used to pinpoint how many customer pool in each date for deeper retention analysis, and code filter from WHERE used % since the we need to locate the pool for the specific campaign. </p>
 
 ```tsql
+get_point as(
+SELECT
+  cohort_date,
+  COUNT(uid) as cohort_pool
+FROM m1_group
+GROUP BY 1
+),
+```
+
+<p align="justify">
+Second CTE is named get_point. Purpose of this temporary table is to store the number of customer in each date who had been given a voucher (hence a pool). The reason this is not merged using subquery in the m1_group is because m1_group is needed to be joined in another table, which is shown in the 3rd CTE. First objective is done, and we can move on to create a retention table.</p>
+
+<h3>2. Create a retention table </h3>
+<p align="justify">
+Retention table is made using customer original pool as a base number, then calculate the number of customers who retain throughout the period in order to compare the retention rate from each date. Since we already have the base number from the 1st objective, the number of retained customers can be found by searching for all recorded transactions from the start of the campaign till months after, as shown below. </p>
+
+```tsql
 order_all as(
 SELECT
   DISTINCT(order_no),
@@ -62,9 +81,9 @@ AND type IS NULL
 ORDER BY 2,3
 ),
 ```
- 
+
  <p align="justify">
- The 2nd CTE is named order_all. This is needed to store all customer's transaction within the start period and months after. Key takeaways from this are as follows:
+ The 3rd CTE is named order_all. This is needed to store all customer's transaction within the start period and months after. Key takeaways from this are as follows:
    <ol type=1>
       <li> <ins>Distinct of order_no</ins>. Needed since we want unique row of each transactions, and order table can be filled with the same order_no in a different rows, since orders table is taking notes from different SKU purchased as well (1 row, 1 SKU code).</li>
       <li> <ins>Join within orders and orders_abuse</ins> to filter abused transaction (we want pure retention) using "type IS NULL" since values of type variable indicate abuse in the transaction.</li>
@@ -72,20 +91,7 @@ ORDER BY 2,3
    </ol></p>
 
 ```tsql
-get_point as(
-SELECT
-  cohort_date,
-  COUNT(uid) as cohort_pool
-FROM m1_group
-GROUP BY 1
-),
-```
-
-<p align="justify">
-Third CTE is named get_point. Purpose of this temporary table is to store the number of customer in each date who had been given a voucher (hence a pool). The reason this is not merged using subquery in the m1_group is because m1_group is needed to be joined in another table, which is shown below.</p>
-
-```tsql
-master_cohort as(
+master_cohort1 as(
 SELECT 
   uid,
   cohort_date,
@@ -100,28 +106,45 @@ ORDER BY 1,2,3
 ```
 
 <p align="justify">
-Second to last needed CTE, master_cohort's purpose is to store information regarding customer's transaction <b>AFTER OR SAME DAY</b> as the cohort date (since we want to see retention after cohort). To do that, we need to join m1_group and order_all first. Then, the gap between each transaction (index_monthly) is calculated by subtracting cohort_date and order_date by month. Now we can track customer's retention monthly, but we need to make it easier to read, which is why we'll be moving to the main query now.</p>
+Master_cohort 1's purpose is to store information regarding customer's transaction <b>AFTER OR SAME DAY</b> as the cohort date (since we want to see retention after cohort). To do that, we need to join m1_group and order_all first. Then, the gap between each transaction (index_monthly) is calculated by subtracting cohort_date and order_date by month. Now we can track customer's retention monthly, but we need to make it easier to read, which is why we'll be moving to the main query now.</p>
 
 ```tsql   
 master_cohort2 as(
 SELECT  
   cohort_date,
-  index_weekly,
+  index_monthly,
   count(uid) as total_uid
 FROM master_cohort1
 group by 1,2
 )
+```
 
+<p align="justify">
+The last CTE is master_cohort2, with purpose to hold the information of total customers retained (same idea as get_point, but different target). Since we have all the informations we needed, let's move on to main query.</p>
+
+```tsql
 SELECT
   cohort_date,
   cohort_pool,
-  MAX(IF(index_weekly = 0, total_uid,NULL)) as index_0,
-  MAX(IF(index_weekly = 1, total_uid,NULL)) as index_1,
-  MAX(IF(index_weekly = 2, total_uid,NULL)) as index_2,
-  MAX(IF(index_weekly = 3, total_uid,NULL)) as index_3,
-  MAX(IF(index_weekly = 4, total_uid,NULL)) as index_4
+  MAX(IF(index_monthly = 0, total_uid,NULL)) as index_0,
+  MAX(IF(index_monthly = 1, total_uid,NULL)) as index_1,
+  MAX(IF(index_monthly = 2, total_uid,NULL)) as index_2,
+  MAX(IF(index_monthly = 3, total_uid,NULL)) as index_3,
+  MAX(IF(index_monthly = 4, total_uid,NULL)) as index_4
 FROM get_point
 LEFT JOIN master_cohort2 USING (cohort_date)
 GROUP BY 1,2
 ORDER BY 1
 ```
+<p align="justify">
+In main query, we compile all the information from get_point and master_cohort2 by joining them, then used MAX() function combined with IF() to get total customers from each cohort_date. With that, the second objective is done. You can see the results below. </p>
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49559301/205937308-74339ea4-1b6f-46b7-9e11-0a139b462517.png" width="300" height="275" />
+</p>
+
+<h3>3. Visualize customers retention </h3>
+
+
+
+
