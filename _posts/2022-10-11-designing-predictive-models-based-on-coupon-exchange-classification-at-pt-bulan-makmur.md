@@ -47,7 +47,7 @@ In order to develop a predictive model, BigQuery SQL is used for data gathering,
     <li> Product improvement -> voucher section, general usability improvement </li>
     <li> Consumer segmentation based on average spending </li>
     <li> Incentive program for loyal customers, eg. loyalty program </li>
-    <li> Offline marketing campaign </li> </ol>
+    <li> Offline marketing campaign </li></li></ol></ol>
   
   
   
