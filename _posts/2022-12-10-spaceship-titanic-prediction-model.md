@@ -1,4 +1,4 @@
-## Spaceship Titanic Predictive Modelling with Machine Learning
+## Spaceship Titanic - Prediction Modelling with SVM/Random Forest/XGBoost
 
 <h2>Case</h2>
 <p align="justify">
